@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'signin.dart';
 import 'user.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,7 +22,6 @@ class SignupState extends State<Signup> {
           'email': user.email,
           'password': user.password
         });
-    print(res.body);
     Navigator.push(
         context, new MaterialPageRoute(builder: (context) => Signin()));
   }
