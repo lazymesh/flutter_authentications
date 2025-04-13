@@ -94,9 +94,9 @@ class SignupState extends State<Signup> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: TextFormField(
-                    controller: TextEditingController(text: user.email),
+                    controller: TextEditingController(text: user.password),
                     onChanged: (value) {
-                      user.email = value;
+                      user.password = value;
                     },
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -126,14 +126,16 @@ class SignupState extends State<Signup> {
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(55, 16, 16, 0),
-                  child: SizedBox(
+                  child: ButtonTheme(
                     height: 50,
-                    width: 400,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
+                    minWidth: 400,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.blue,
+                        backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16.0)),
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
                       ),
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
@@ -145,7 +147,8 @@ class SignupState extends State<Signup> {
                       child: Text(
                         "Signup",
                         style: TextStyle(color: Colors.white, fontSize: 20),
-                      )),
+                      )
+                    ),
                   ),
                 ),
                 Padding(

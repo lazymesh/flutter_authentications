@@ -4,12 +4,14 @@ const router = express.Router()
 
 
 router.post('/signup',(req,res)=>{
+    console.log(req.body)
     User.findOne({email:req.body.email},(err,user)=>{
         if(err){
             console.log(err)
             res.json(err)
         }else{
             if(user==null){
+                console.log("user not found", req.body)
                 const user = User({
                     email:req.body.email,
                     password:req.body.password
@@ -17,19 +19,19 @@ router.post('/signup',(req,res)=>{
                 user.save()
                 .then((err)=>{
                     if(err){
-                        console.log(err)
+                        console.log("failure", err)
                         res.json(err)
                     }else{
-                        console.log(user)
+                        console.log("success", user)
                         res.json(user)
                     }
                     
                 })
             }else{
 
-            res.json({
-                message:'email is not avilable'
-            })   
+                res.json({
+                    message:'email is not avilable'
+                })   
             }
         }
     })

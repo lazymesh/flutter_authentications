@@ -4,6 +4,7 @@ import 'dashboard.dart';
 import 'user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -22,11 +23,26 @@ class SigninState extends State<Signin> {
       },
       body: <String, String>{'email': user.email, 'password': user.password},
     );
-    print(res.body);
-    Navigator.push(
-      context,
-      new MaterialPageRoute(builder: (context) => Dashboard()),
+    if (res.body.isEmpty) {
+      Navigator.push(
+        context,
+        new MaterialPageRoute(builder: (context) => Dashboard()),
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "No such user found",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
     );
+      Navigator.push(
+        context,
+        new MaterialPageRoute(builder: (context) => Signup()),
+      );
+    }
   }
 
   User user = User('', '');
@@ -96,9 +112,9 @@ class SigninState extends State<Signin> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: TextFormField(
-                      controller: TextEditingController(text: user.email),
+                      controller: TextEditingController(text: user.password),
                       onChanged: (value) {
-                        user.email = value;
+                        user.password = value;
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -131,15 +147,16 @@ class SigninState extends State<Signin> {
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(55, 16, 16, 0),
-                    child: SizedBox(
+                    child: ButtonTheme(
                       height: 50,
-                      width: 400,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
+                      minWidth: 400,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.blue,
+                          backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
-                          )
+                          ),
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
