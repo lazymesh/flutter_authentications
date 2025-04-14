@@ -4,6 +4,6 @@ const Schema = mongoose.Schema
 const newSchema = new Schema({
     email:String,
     password:String
-})
-console.log(mongoose.connections)
+}, {collection: 'express_users'})
+
 module.exports = mongoose.model('express', newSchema)
