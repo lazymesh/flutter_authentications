@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from pymongo import MongoClient
 from datetime import timedelta
-from passlib.context import CryptContext
 from dotenv import load_dotenv
+import bcrypt
 
 # Load environment variables
 load_dotenv()
@@ -26,9 +26,6 @@ client = MongoClient(uri)
 db = client[db]
 users_collection = db["fastapi_users"]
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # JWT settings
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -36,21 +33,27 @@ ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 # Helper functions
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
+# Hash a password using bcrypt
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
+    return hashed_password
 
-def get_user(username: str):
-    user_data = users_collection.find_one({"username": username})
+# Check if the provided password matches the stored password (hashed)
+def verify_password(plain_password, hashed_password):
+    password_byte_enc = plain_password.encode('utf-8')
+    return bcrypt.checkpw(password = password_byte_enc , hashed_password = hashed_password)
+
+def get_user(email: str):
+    user_data = users_collection.find_one({"email": email})
     if user_data:
         user_data["id"] = str(user_data["_id"])
         return UserInDB(**user_data)
     return None
 
-def authenticate_user(username: str, password: str):
-    user = get_user(username)
+def authenticate_user(email: str, password: str):
+    user = get_user(email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):

@@ -34,7 +34,8 @@ async def signup(user: UserCreate):
 @router.post("/signin", response_model=Token)
 async def signin(form_data: UserCreate):
     print(form_data)
-    user = authenticate_user(form_data.username, form_data.password)
+    user = authenticate_user(form_data.email, form_data.password)
+    print(user)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
