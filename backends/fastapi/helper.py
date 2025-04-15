@@ -14,15 +14,20 @@ load_dotenv()
 
 from models import TokenData, UserInDB
 
-
 # MongoDB connection
-client = MongoClient(os.getenv("MONGODB_URI"))
-db = client["auth_db"]
-users_collection = db["users"]
+dbUser = os.getenv("MONGODB_USER")
+dbPassword = os.getenv("MONGODB_PASSWORD")
+dbUri = os.getenv("MONGODB_URI")
+dbCluster = os.getenv("MONGODB_CLUSTER")
+db = os.getenv("MONGODB_DATABASE")
+uri = f'mongodb+srv://{dbUser}:{dbPassword}@{dbUri}/?retryWrites=true&w=majority&appName={dbCluster}'
+
+client = MongoClient(uri)
+db = client[db]
+users_collection = db["fastapi_users"]
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 # JWT settings
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")

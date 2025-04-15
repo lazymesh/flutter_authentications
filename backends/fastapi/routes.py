@@ -1,5 +1,5 @@
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import HTTPException, Depends, status
+from fastapi import HTTPException, Depends, status, Body
 from fastapi import APIRouter
 from datetime import timedelta
 
@@ -9,14 +9,9 @@ from models import User, UserCreate, UserInDB, Token
 router = APIRouter()
 
 # Routes
-router.post("/signup", response_model=User, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=User, status_code=status.HTTP_201_CREATED)
 async def signup(user: UserCreate):
     # Check if user already exists
-    if users_collection.find_one({"username": user.username}):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
-        )
     if users_collection.find_one({"email": user.email}):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -26,20 +21,19 @@ async def signup(user: UserCreate):
     # Create new user
     user_data = UserInDB(
         email=user.email,
-        username=user.username,
         hashed_password=get_password_hash(user.password)
     )
     
-    result = users_collection.insert_one(user_data.dict())
+    result = users_collection.insert_one(user_data.__dict__)
     
     return {
         "id": str(result.inserted_id),
         "email": user.email,
-        "username": user.username
     }
 
-router.post("/signin", response_model=Token)
-async def signin(form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post("/signin", response_model=Token)
+async def signin(form_data: UserCreate):
+    print(form_data)
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -55,7 +49,7 @@ async def signin(form_data: OAuth2PasswordRequestForm = Depends()):
     
     return {"access_token": access_token, "token_type": "bearer"}
 
-router.get("/users/me", response_model=User)
+@router.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return {
         "id": str(current_user.id),

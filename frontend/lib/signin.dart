@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_authentications/toasts.dart';
 import 'signup.dart';
 import 'dashboard.dart';
 import 'user.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:fluttertoast/fluttertoast.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -21,7 +22,7 @@ class SigninState extends State<Signin> {
       headers: <String, String>{
         'Context-Type': 'application/json;charSet=UTF-8',
       },
-      body: <String, String>{'email': user.email, 'password': user.password},
+      body: jsonEncode(<String, String>{'email': user.email, 'password': user.password}),
     );
     if (res.body.isEmpty) {
       Navigator.push(
@@ -29,19 +30,7 @@ class SigninState extends State<Signin> {
         new MaterialPageRoute(builder: (context) => Dashboard()),
       );
     } else {
-      Fluttertoast.showToast(
-        msg: "No such user found",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-    );
-      Navigator.push(
-        context,
-        new MaterialPageRoute(builder: (context) => Signup()),
-      );
+      Toasts().show("User not found", Colors.red);
     }
   }
 

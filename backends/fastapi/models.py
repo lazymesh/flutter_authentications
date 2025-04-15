@@ -1,14 +1,22 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from typing import Optional
 from datetime import datetime
+import json
 
 # Models
 class UserBase(BaseModel):
     email: EmailStr
-    username: str
 
 class UserCreate(UserBase):
     password: str
+    
+    @model_validator(mode='before')
+    @classmethod
+    def validate_to_json(cls, value):
+        # print(value, isinstance(value, bytes))
+        if isinstance(value, str) or isinstance(value, bytes):
+            return cls(**json.loads(value))
+        return value
 
 class UserInDB(UserBase):
     hashed_password: str
