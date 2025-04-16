@@ -19,7 +19,7 @@ class UserCreate(UserBase):
         return value
 
 class UserInDB(UserBase):
-    hashed_password: str
+    hashed_password: bytes
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class User(UserBase):

@@ -1,5 +1,5 @@
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import HTTPException, Depends, status, Body
+from fastapi import HTTPException, Depends, status, Request
 from fastapi import APIRouter
 from datetime import timedelta
 
@@ -27,15 +27,13 @@ async def signup(user: UserCreate):
     result = users_collection.insert_one(user_data.__dict__)
     
     return {
-        "id": str(result.inserted_id),
+        "id": str('result.inserted_id'),
         "email": user.email,
     }
 
 @router.post("/signin", response_model=Token)
 async def signin(form_data: UserCreate):
-    print(form_data)
     user = authenticate_user(form_data.email, form_data.password)
-    print(user)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -45,7 +43,7 @@ async def signin(form_data: UserCreate):
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.email}, expires_delta=access_token_expires
     )
     
     return {"access_token": access_token, "token_type": "bearer"}

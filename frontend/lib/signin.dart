@@ -24,7 +24,7 @@ class SigninState extends State<Signin> {
       },
       body: jsonEncode(<String, String>{'email': user.email, 'password': user.password}),
     );
-    if (res.body.isEmpty) {
+    if (res.body.isNotEmpty) {
       Navigator.push(
         context,
         new MaterialPageRoute(builder: (context) => Dashboard()),
